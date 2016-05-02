@@ -23,7 +23,7 @@
 				<div class="col-md-3 col-sm-3 col-xs-3">
 					<img src="images/mu.gif" alt="mu" style="width:50px;height:56px;float:left;">
 					<h4> Missouri Student Unions </h4>
-					<h5> University of Missouri </h4>
+					<h5> University of Missouri </h5>
 				</div>
 			</div>
 		</div>
@@ -47,8 +47,13 @@
 			</div>
 		</div>
 		<?php
+        
+        if(isset($_POST['submit'])) {
+        
 		//initializing connection------------------------------------------------------------------------
-		$link = mysqli_connect("http://40.86.93.141/", "avatar", "bigboybigben", "avatarGroup");
+		$link = mysqli_connect("localhost", "avatar", "bigboybigben", "avatarGroup");
+        
+        
 		
 		//checks if connection failed--------------------------------------------------------------------
 		if (mysqli_connect_errno()) { // if no error occurred when connecting
@@ -56,45 +61,51 @@
 			exit();
 		}
 		
-		//checking user-------------------------------------------------------------------------------
-		if(isset($_POST['submit'])){
-			//variables used------------------------------------------
-			$username = $_POST['username'];
-			$password = $_POST['password'];
-			$numOfRows = 0;
-			$error_code = "0000";
-			
-			//checking if username is NULL----------------------------
-			if($_SESSION["username"] == ""){
-				$error_code = "No username entered";
-			}
-
-			//checking if password is correct if username exists------
-			if($error_code == "0000"){
-				//getting hashed password--------------------
-				if($stmt = mysqli_prepare($link, "SELECT username,hashedpass,userType FROM employee WHERE username = ?")){
-					mysqli_stmt_bind_param($stmt, "s", $username);						//binding parameters
-					mysqli_stmt_execute($stmt);											//executing statement
-					mysqli_stmt_store_result($stmt);									//storing results
-					mysqli_stmt_bind_result($stmt,$_SESSION["username"],$hash,$_SESSION["userType"]);	//binding results to variables
-					mysqli_stmt_fetch($stmt);											//fetching results				
-					mysqli_stmt_close($stmt);											//closing connection									
-				}
-				//checking passowrd--------------------------
-				if(!password_verify($password,$hash))
-					$error_code = "Incorrect password";
-			}
-			
-			//printing out if success or error-----------------------
-			if($error_code == "0000"){
-				echo "<h4> Success </h4>";
-				header('Location: home.php');
-			}
-			else{
-				echo "<h4> Failure (ERROR CODE: ".$error_code.") </h4>";
-			}
-		}
+		$query = "SELECT * FROM employee WHERE username=?";
+        
+        $stmt = mysqli_stmt_init($link);
+                    
+        if(mysqli_stmt_prepare($stmt, $query)){
+                        
+            $user = $_POST['username'];
+						
+            mysqli_stmt_bind_param($stmt, "s", $user);
+            						
+            mysqli_stmt_execute($stmt);
+                                    						
+            $result = mysqli_stmt_get_result($stmt);
+                                    
+            if( mysqli_num_rows($result) == 0){
+                						
+                echo "Invalid username or password. No match found.";
+						
+            }else{
+						
+                $row = mysqli_fetch_array($result, MYSQLI_NUM);
+							
+                $salt = $row[2];//gets the salt for that user
+                                            
+                $pass = $_POST['password'];
+                                
+                $hashedpass = $row[3];//gets the hashed password
+                                            
+                $_SESSION["userType"] = $row[4];//gets the user type
+                                            
+                if (password_verify($salt.$pass, $hashedpass)) {
+                                
+                    header('Location: http://cs3380-avatar.centralus.cloudapp.azure.com/fproj/choose_loc.php');
+                                
+                }else{
+    						
+                   echo 'Invalid username or password.';
+					
+                }	
+            }	
+        }
 		mysqli_close($link);
+            
+        }
+        
 		?>
 	</body>
 </html>
