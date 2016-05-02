@@ -11,7 +11,7 @@
 			header("Location: https://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]);
 			exit();
 		}
-		
+
 		// Start the session
 		session_start();
 		?>
@@ -47,65 +47,67 @@
 			</div>
 		</div>
 		<?php
-        
+
         if(isset($_POST['submit'])) {
-        
+
 		//initializing connection------------------------------------------------------------------------
 		$link = mysqli_connect("localhost", "avatar", "bigboybigben", "avatarGroup");
-        
-        
-		
+
+
+
 		//checks if connection failed--------------------------------------------------------------------
 		if (mysqli_connect_errno()) { // if no error occurred when connecting
 			printf("Connect failed: %s\n", mysqli_connect_error());
 			exit();
 		}
-		
+
 		$query = "SELECT * FROM employee WHERE username=?";
-        
+
         $stmt = mysqli_stmt_init($link);
-                    
+
         if(mysqli_stmt_prepare($stmt, $query)){
-                        
+
             $user = $_POST['username'];
-						
+
             mysqli_stmt_bind_param($stmt, "s", $user);
-            						
+
             mysqli_stmt_execute($stmt);
-                                    						
+
             $result = mysqli_stmt_get_result($stmt);
-                                    
+
             if( mysqli_num_rows($result) == 0){
-                						
+
                 echo "Invalid username or password. No match found.";
-						
+
             }else{
-						
+
                 $row = mysqli_fetch_array($result, MYSQLI_NUM);
-							
+
                 $salt = $row[2];//gets the salt for that user
-                                            
+
                 $pass = $_POST['password'];
-                                
+
                 $hashedpass = $row[3];//gets the hashed password
-                                            
+
                 $_SESSION["userType"] = $row[4];//gets the user type
-                                            
+								$_SESSION["username"] = $user;//gets the username
+								$_SESSION["location"] = "Not Chosen";
+
                 if (password_verify($salt.$pass, $hashedpass)) {
-                                
+
                     header('Location: http://cs3380-avatar.centralus.cloudapp.azure.com/fproj/choose_loc.php');
-                                
+
                 }else{
-    						
+
                    echo 'Invalid username or password.';
-					
-                }	
-            }	
+
+                }
+            }
         }
 		mysqli_close($link);
-            
+
         }
-        
+
 		?>
 	</body>
 </html>

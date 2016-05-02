@@ -9,9 +9,11 @@
 
 	<style>
 		.holder {
-			width: 580px;
+			width: 586px;
 			margin: 50 auto;
-			height: initial;
+			height: 360px;
+			border: #DBA901;
+			border-style: double;
 		}
 		body {
 			background-color: #2b2b2b;
@@ -40,20 +42,34 @@
 			left: 60px;
 			top: 130px;
 			font-weight: 600;
-			color: black;
+			color: #DBA901;
 			z-index: 2;
 		}
 </head>
 <body>
-	<?php include("header.php");?>
+	<?php include("header.php");
+		if(isset($_POST['studentcenter'])) {
+			$_SESSION['location'] = "Student Center";
+			header('Location: /fproj/inventory.php');
+		}
+		if(isset($_POST['memorialunion'])) {
+			$_SESSION['location'] = "Memorial Union";
+			header('Location: /fproj/inventory.php');
+		}
+	?>
 		<div class="holder">
+			<h2 style="text-align: center; color: #DBA901">Choose a location</h2>
 			<div id="btn-holder">
 				<h3>Student Center</h3>
-				<input type="button" class="choose-loc" id="student-center" onclick"" value="">
+				<form method="POST" action=''>
+					<input type="submit" class="choose-loc" id="student-center" name="studentcenter" value="">
+				</form>
 			</div>
 			<div id="btn-holder">
 				<h3>Memorial Union</h3>
-				<input type="button" class="choose-loc"  id="memorial-union" onclick"" value="">
+				<form method="POST" action=''>
+					<input type="submit" class="choose-loc"  id="memorial-union" name="memorialunion" value="">
+				</form>
 			</div>
 		</div>
 <body>

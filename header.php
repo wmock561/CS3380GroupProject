@@ -1,7 +1,5 @@
 <?php
 	session_start();
-	$_SESSION["pawprint"] = "MTS5Z9";
-	$_SESSION["location"] = "Memorial Union";
 ?>
 
 <html>
@@ -29,6 +27,7 @@
 		}
 		.h3e {
 			float: left;
+			margin-left: 10px;
 			display: block;
 			font-size: 24px;
 		}
@@ -43,8 +42,8 @@
 		}
 		.logout-holder {
 			float: left;
-			width: inherit;
-			height: 40px;
+			width: 500px;
+			height: 50px;
 		}
 		#logout-btn {
 			margin-top: 15px;
@@ -52,7 +51,8 @@
 		}
 		.button-holder {
 			margin: 0 auto;
-			width: 330px;
+			width: initial;
+			height: 40px;
 		}
 		.loc-btn {
 			border: 2px solid #DBA901;
@@ -93,6 +93,7 @@
 		}
 		#loc-h3 {
 			float: none;
+			margin-right: 10px;
 		}
 		.log-info {
 			height: 85px;
@@ -103,27 +104,36 @@
 	<div class="menubar">
 		<div class="log-info">
 		<div class="logout-holder">
-			<h3 class="h3e">Welcome <?=$_SESSION["pawprint"]?></h3>
-			<input id="logout-btn" class="loc-btn" type="button" onclick="" value="Log Out">
+			<h3 class="h3e">Welcome <?=$_SESSION["username"]?></h3>
+			<form action="<?=$_SERVER['PHP_SELF']?>" style="float: left" method="POST"><input id="logout-btn" class="loc-btn" type="submit" name='logout' value="Log Out"></form>
 		</div>
 		<div class="loc-holder">
 			<h3 id="loc-h3" class="h3e">Location: <?=$_SESSION["location"]?></h3>
-			<input class="loc-btn" type="button" onclick="location.href=''" value="Change Location">
+			<input class="loc-btn" type="button" onclick="location.href='choose_loc.php'" value="Change Location">
 		</div>
 		</div>
 		<div class="img-holder">
 			<img id="logo" src="https://apps-qa-a.missouri.edu/mizzoucheckout/Images/organizations/mizzouCheckoutHeader.png">
 		</div>
 		<div class="button-holder">
-			<input class="button" type="button" onclick="location.href=''" value="Check Out">
-			<input class="button" type="button" onclick="location.href=''" value="Check In">
-			<input class="button" type="button" onclick="location.href=''" value="Inventory">
+			<input class="button" type="button" onclick="location.href='checkout.php'" value="Check Out">
+			<input class="button" type="button" onclick="location.href='checkin.php'" value="Check In">
 			<?php
-				if($_SESSION["usertype"] == "admin"){
-					echo '<input class="button" type="button" onclick="location.href=""" value="Admin">';
+			 	if($_SESSION['location'] != "Not Chosen") {
+					echo '<input class="button" type="button" onclick="location.href='."'inventory.php'".'" value="Inventory">';
+				}
+				if($_SESSION["userType"] == "admin"){
+					echo '<input class="button" type="button" onclick="location.href='."'adminpage.php'".'" value="Admin">';
 				}
 			?>
 		</div>
 	</div>
+	<?php
+		if(isset($_POST['logout'])) {
+			session_unset();
+			session_destroy();
+			header('Location: index.php');
+		}
+	?>
 </body>
 </html>
